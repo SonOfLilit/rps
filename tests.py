@@ -1,3 +1,4 @@
+import os
 import pytest
 import json
 import subprocess
@@ -19,15 +20,15 @@ test_suite = [
     (3, {"A": "R!B", "B": "P!C", "C": "S!A"}, {"A": "R!A"}),  # A->B->C->A
     # Access own and opponent's history
     (
-        8,
-        {"A": "R!P!S!R!P!P@!S@!R@!A"},
+        9,
+        {"A": "RPS!!!P@S@S@R@R@R@!!!!!!A"},
         {"A": "R!A"},
-    ),  # RPSRPPRP vs RPSRPSRP
+    ),
     # Access opponent's history
     (
-        8,
-        {"A": "R!P!S!R!P!P?!S?!R?!A"},
-        {"A": "R!A"},
+        9,
+        {"A": "SSS!!!P?S?S?R?R?R?!!!!!!A"},
+        {"A": "SPR!!!RRRRRR!!!!!!"},
     ),  # RPSR + opponent's PSR
     # Complex strategy
     (5, {"A": "R!P?>>!A"}, {"A": "R!S!P!A"}),  # Counter to opponent's previous move + 2
@@ -96,17 +97,18 @@ def run_test_suite(
     results = []
     for k, prog1, prog2 in test_suite:
         score, match_log, full_log = run_game(k, prog1, prog2, SEED)
-        results.append(
-            {
-                "input": {"k": k, "<": prog1, ">": prog2},
-                "matches": match_log,
-                "score": score,
-                "log": {
+        result = {
+            "input": {"k": k, "<": prog1, ">": prog2},
+            "matches": match_log,
+            "score": score,
+            "log": full_log,
+        }
+        if not os.environ.get("DEBUG"):
+            result["log"] = {
                     "<": simplify_log(prog1["A"], full_log["<"]),
                     ">": simplify_log(prog2["A"], full_log[">"]),
-                },
-            }
-        )
+                }
+        results.append(result)
     return results
 
 

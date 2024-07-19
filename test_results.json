@@ -367,55 +367,69 @@
   },
   {
     "input": {
-      "k": 8,
+      "k": 9,
       "<": {
-        "A": "R!P!S!R!P!P@!S@!R@!A"
+        "A": "RPS!!!P@S@S@R@R@R@!!!!!!A"
       },
       ">": {
         "A": "R!A"
       }
     },
-    "matches": "RR=PP=SS=RR=PP=RS<RR=RP>",
-    "score": 0,
+    "matches": "SR>PR<RR=SR>SR>SR>PR<PR<RR=",
+    "score": -1,
     "log": {
       "<": [
         [
           "R",
-          ""
+          "RP",
+          "RPS",
+          "RP"
         ],
         [
-          "P",
-          ""
+          "R"
         ],
         [
-          "S",
-          ""
-        ],
-        [
-          "R",
-          ""
-        ],
-        [
-          "P",
           ""
         ],
         [
           "P",
           "R",
-          ""
+          "RS",
+          "RP",
+          "RPS",
+          "RPP",
+          "RPPR",
+          "RPPS",
+          "RPPSR",
+          "RPPSS",
+          "RPPSSR",
+          "RPPSSS",
+          "RPPSS"
         ],
         [
-          "S",
-          "R",
-          ""
+          "RPPS"
         ],
         [
-          "R",
+          "RPP"
+        ],
+        [
+          "RP"
+        ],
+        [
+          "R"
+        ],
+        [
           ""
         ]
       ],
       ">": [
         [
+          "R",
+          ""
+        ],
+        [
+          "A",
+          "",
           "R",
           ""
         ],
@@ -466,98 +480,93 @@
   },
   {
     "input": {
-      "k": 8,
+      "k": 9,
       "<": {
-        "A": "R!P!S!R!P!P?!S?!R?!A"
+        "A": "SSS!!!P?S?S?R?R?R?!!!!!!A"
       },
       ">": {
-        "A": "R!A"
+        "A": "SPR!!!RRRRRR!!!!!!"
       }
     },
-    "matches": "RS<PP=SR>RS<PP=RS<RR=RP>",
+    "matches": "SR>SP<SS=RR=RR=RR=PR<PR<SR>",
     "score": 1,
     "log": {
       "<": [
         [
-          "R",
-          ""
-        ],
-        [
-          "P",
-          ""
-        ],
-        [
           "S",
-          ""
+          "SS",
+          "SSS",
+          "SS"
         ],
         [
-          "R",
+          "S"
+        ],
+        [
           ""
         ],
         [
           "P",
-          ""
-        ],
-        [
-          "P",
-          "R",
-          ""
-        ],
-        [
           "S",
-          "R",
-          ""
+          "SS",
+          "SP",
+          "SPS",
+          "SPP",
+          "SPPR",
+          "SPPRR",
+          "SPPRRR",
+          "SPPRR"
         ],
         [
-          "R",
+          "SPPR"
+        ],
+        [
+          "SPP"
+        ],
+        [
+          "SP"
+        ],
+        [
+          "S"
+        ],
+        [
           ""
         ]
       ],
       ">": [
         [
-          "R",
+          "S",
+          "SP",
+          "SPR",
+          "SP"
+        ],
+        [
+          "S"
+        ],
+        [
           ""
         ],
         [
-          "A",
-          "",
           "R",
-          ""
+          "RR",
+          "RRR",
+          "RRRR",
+          "RRRRR",
+          "RRRRRR",
+          "RRRRR"
         ],
         [
-          "A",
-          "",
-          "R",
-          ""
+          "RRRR"
         ],
         [
-          "A",
-          "",
-          "R",
-          ""
+          "RRR"
         ],
         [
-          "A",
-          "",
-          "R",
-          ""
+          "RR"
         ],
         [
-          "A",
-          "",
-          "R",
-          ""
+          "R"
         ],
         [
-          "A",
-          "",
-          "R",
-          ""
-        ],
-        [
-          "A",
-          "",
-          "R",
           ""
         ]
       ]
