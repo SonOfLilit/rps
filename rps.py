@@ -174,12 +174,21 @@ def run_game(k, prog1, prog2, seed):
 
 # Example usage:
 if __name__ == "__main__":
-    prog1 = {"A": "R>!P>!S>!A"}
-    prog2 = {"A": "S!R!P!"}
-    score, match_log, full_log = run_game(3, prog1, prog2, 42)
-    print(f"Score: {score}")
-    print(f"Match log: {match_log}")
-    print("Full log:")
     import json
+    import os
+    import sys
 
-    print(json.dumps(full_log, indent=2))
+    if len(sys.argv) != 3:
+        print("usage:    python rps.py 'R!P!S!S!S!A' 'S!B|P?>!B'")
+        print("  DEBUG=1 python rps.py 'R!P!S!S!S!A' 'S!B|P?>!B'")
+        print()
+        print("see README.md for the machine specification")
+    else:
+        _, a, b = sys.argv
+        prog1 = {k: v for k, v in zip("ABCD", a.split("|"))}
+        prog2 = {k: v for k, v in zip("ABCD", b.split("|"))}
+        score, match_log, full_log = run_game(100, prog1, prog2, 42)
+        print(f"Score: {score } : {-score}")
+        print(f"Match log: {match_log}")
+        if os.environ.get("DEBUG"):
+            print(json.dumps(full_log, indent=2))
