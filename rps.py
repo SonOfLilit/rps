@@ -1,25 +1,39 @@
 import random
 
+# Utility functions for RPS conversions
+def rps_to_int(move):
+    """Convert RPS move to integer representation."""
+    return {"R": 2, "P": 0, "S": 1}[move]
+
+def int_to_rps(num):
+    """Convert integer representation to RPS move."""
+    return {2: "R", 0: "P", 1: "S"}[num % 3]
 
 def rps_increment(move):
-    return "PSR"["RPS".index(move)]
-
+    """Increment RPS move."""
+    return int_to_rps((rps_to_int(move) + 1) % 3)
 
 def rps_decrement(move):
-    return "SRP"["RPS".index(move)]
-
+    """Decrement RPS move."""
+    return int_to_rps((rps_to_int(move) - 1) % 3)
 
 def rps_add(move1, move2):
-    return "RPS"[("RPS".index(move1) + "RPS".index(move2)) % 3]
-
+    """Add two RPS moves."""
+    return int_to_rps((rps_to_int(move1) + rps_to_int(move2)) % 3)
 
 def rps_subtract(move1, move2):
-    return "RPS"[("RPS".index(move1) - "RPS".index(move2)) % 3]
-
+    """Subtract two RPS moves."""
+    return int_to_rps((rps_to_int(move1) - rps_to_int(move2)) % 3)
 
 def rps_special(move1, move2):
+    """Special operation: S if both R, else P."""
     return "S" if move1 == move2 == "R" else "P"
 
+def rps_compare(move1, move2):
+    """Compare two RPS moves. Returns '>' if move1 wins, '<' if move2 wins, '=' if tie."""
+    if move1 == move2:
+        return "="
+    return ">" if rps_to_int(move1) == (rps_to_int(move2) - 1) % 3 else "<"
 
 def execute_operation(op, stack, ip):
     if op in "RPS":
@@ -33,13 +47,13 @@ def execute_operation(op, stack, ip):
     elif op == "<":
         stack.append(rps_decrement(stack.pop()))
     elif op == "+":
-        b, a = stack.pop(), stack.pop()
+        a, b = stack.pop(), stack.pop()
         stack.append(rps_add(a, b))
     elif op == "-":
-        b, a = stack.pop(), stack.pop()
+        a, b = stack.pop(), stack.pop()
         stack.append(rps_subtract(a, b))
     elif op == "^":
-        b, a = stack.pop(), stack.pop()
+        a, b = stack.pop(), stack.pop()
         stack.append(rps_special(a, b))
     elif op == "X":
         stack.pop()
@@ -50,15 +64,14 @@ def execute_operation(op, stack, ip):
     elif op == "[":
         stack.append(stack[-2])
     elif op == "@":
-        depth = "RPS".index(stack.pop())
+        depth = rps_to_int(stack.pop())
         stack.append("R")  # Placeholder, actual value set in run_program
     elif op == "?":
-        depth = "RPS".index(stack.pop())
+        depth = rps_to_int(stack.pop())
         stack.append("R")  # Placeholder, actual value set in run_program
     else:
         raise NotImplementedError(op)
     return None
-
 
 def run_program(program, k, opponent_moves):
     stack = []
@@ -99,13 +112,11 @@ def run_program(program, k, opponent_moves):
 
             log_state()
             if op == "@" and stack:
-                depth = "RPS".index(stack[-1])
+                depth = rps_to_int(stack[-1])
                 stack[-1] = moves[depth] if depth < len(moves) else "R"
             elif op == "?" and stack:
-                depth = "RPS".index(stack[-1])
-                stack[-1] = (
-                    opponent_moves[depth] if depth < len(opponent_moves) else "R"
-                )
+                depth = rps_to_int(stack[-1])
+                stack[-1] = opponent_moves[depth] if depth < len(opponent_moves) else "R"
             if move:
                 moves.append(move)
                 log_state()
@@ -124,29 +135,19 @@ def run_program(program, k, opponent_moves):
             assert j < 100
     return moves, log
 
-
 def run_game(k, prog1, prog2, seed):
     random.seed(seed)
     moves1, log1 = run_program(prog1["A"], k, [])
     moves2, log2 = run_program(prog2["A"], k, moves1)
 
-    score = sum(
-        (a == "R" and b == "S") or (a == "P" and b == "R") or (a == "S" and b == "P")
-        for a, b in zip(moves1, moves2)
-    ) - sum(
-        (b == "R" and a == "S") or (b == "P" and a == "R") or (b == "S" and a == "P")
-        for a, b in zip(moves1, moves2)
-    )
+    score = sum(rps_compare(a, b) == "<" for a, b in zip(moves1, moves2)) - \
+            sum(rps_compare(a, b) == ">" for a, b in zip(moves1, moves2))
 
-    match_log = "".join(
-        f"{m1}{m2}{'=' if m1 == m2 else ('>' if (m1+m2) in ['RP', 'PS', 'SR'] else '<')}"
-        for m1, m2 in zip(moves1, moves2)
-    )
+    match_log = "".join(m1 + m2 + rps_compare(m1, m2) for m1, m2 in zip(moves1, moves2))
 
     full_log = {"<": log1, ">": log2}
 
     return score, match_log, full_log
-
 
 # Example usage:
 if __name__ == "__main__":
@@ -157,5 +158,4 @@ if __name__ == "__main__":
     print(f"Match log: {match_log}")
     print("Full log:")
     import json
-
     print(json.dumps(full_log, indent=2))

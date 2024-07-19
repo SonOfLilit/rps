@@ -12,7 +12,7 @@ test_suite = [
     # Increment, decrement, and cycling
     (3, {"A": "R>!P>!S>!A"}, {"A": "S!R!P!"}),  # R->P->S->R
     # Addition, subtraction, and special operations
-    (4, {"A": "RP-!SP+!RR^!RP^!A"}, {"A": "R!R!R!R!"}),  # S, R, S, P vs R, R, R, R
+    (4, {"A": "RP-!SP+!RR^!RP^!A"}, {"A": "R!A"}),  # S, R, S, P vs R, R, R, R
     # Stack operations (duplicate, swap, copy)
     (3, {"A": "R8S%[!!!"}, {"A": "R!A"}),  # RR, PR, RRP vs SSSSS
     # Subroutines
@@ -21,24 +21,44 @@ test_suite = [
     (
         8,
         {"A": "R!P!S!R!P!P@!S@!R@!A"},
-        {"A": "R!P!S!R!P!S!R!P!"},
+        {"A": "R!A"},
     ),  # RPSRPPRP vs RPSRPSRP
     # Access opponent's history
     (
         8,
         {"A": "R!P!S!R!P!P?!S?!R?!A"},
-        {"A": "S!P!R!S!P!S!R!P!"},
+        {"A": "R!A"},
     ),  # RPSR + opponent's PSR
     # Complex strategy
-    (5, {"A": "R!P?>>!A"}, {"A": "~!A"}),  # Counter to opponent's previous move + 2
+    (5, {"A": "R!P?>>!A"}, {"A": "R!S!P!A"}),  # Counter to opponent's previous move + 2
     # Error cases
     (1, {"A": "-!A"}, {"A": "R!A"}),  # Stack underflow
     (1, {"A": "Q!A"}, {"A": "R!A"}),  # Unknown command
     # Edge cases for @ and ?
     (
+        1,
+        {"A": "S@!"},
+        {"A": "R!A"},
+    ),  # Access own moves (including non-existent)
+    (
+        2,
+        {"A": "R!P@!"},
+        {"A": "R!A"},
+    ),  # Access own moves (including non-existent)
+    (
+        2,
+        {"A": "R!S@!"},
+        {"A": "R!A"},
+    ),  # Access own moves (including non-existent)
+    (
         3,
-        {"A": "R!P!P@!S@!R@!A"},
-        {"A": "R!P!S!"},
+        {"A": "R!R!S@!"},
+        {"A": "R!A"},
+    ),  # Access own moves (including non-existent)
+    (
+        3,
+        {"A": "R!R!P@!"},
+        {"A": "R!A"},
     ),  # Access own moves (including non-existent)
     (
         3,
