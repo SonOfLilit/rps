@@ -1,34 +1,25 @@
 import random
 
-def set_random_seed(seed):
-    random.seed(seed)
+def rps_increment(move):
+    return 'PSR'['RPS'.index(move)]
 
-def rps_add(a, b):
-    return 'RPS'[(('RPS'.index(a) + 'RPS'.index(b)) % 3)]
+def rps_decrement(move):
+    return 'SRP'['RPS'.index(move)]
 
-def rps_subtract(a, b):
-    return 'RPS'[(('RPS'.index(a) - 'RPS'.index(b)) % 3)]
+def rps_add(move1, move2):
+    return 'RPS'[('RPS'.index(move1) + 'RPS'.index(move2)) % 3]
 
-def rps_increment(a):
-    return 'RPS'[(('RPS'.index(a) + 1) % 3)]
+def rps_subtract(move1, move2):
+    return 'RPS'[('RPS'.index(move1) - 'RPS'.index(move2)) % 3]
 
-def rps_decrement(a):
-    return 'RPS'[(('RPS'.index(a) - 1) % 3)]
-
-def rps_special(a, b):
-    return 'S' if a == b == 'R' else 'P'
-
-def rps_random():
-    return random.choice('RPS')
-
-def get_history_move(history, depth):
-    return history[depth] if depth < len(history) else 'R'
+def rps_special(move1, move2):
+    return 'S' if move1 == move2 == 'R' else 'P'
 
 def execute_operation(op, stack, history, opponent_history):
     if op in 'RPS':
         stack.append(op)
     elif op == '~':
-        stack.append(rps_random())
+        stack.append(random.choice('RPS'))
     elif op == '!':
         if stack:
             return stack.pop()
@@ -63,13 +54,13 @@ def execute_operation(op, stack, history, opponent_history):
         if len(stack) >= 2:
             stack.append(stack[-2])
     elif op == '@':
-        if stack:
+        if stack and history:
             depth = 'RPS'.index(stack.pop())
-            stack.append(get_history_move(history, depth))
+            stack.append(history[depth] if depth < len(history) else 'R')
     elif op == '?':
-        if stack:
+        if stack and opponent_history:
             depth = 'RPS'.index(stack.pop())
-            stack.append(get_history_move(opponent_history, depth))
+            stack.append(opponent_history[depth] if depth < len(opponent_history) else 'R')
     return None
 
 def run_program(program, k, opponent_moves):
@@ -86,27 +77,22 @@ def run_program(program, k, opponent_moves):
                 moves.append(move)
                 history.insert(0, move)
                 break
-        if len(moves) < len(opponent_moves) + 1:
+        if len(moves) < _ + 1:
             moves.append('R')  # Default move if program doesn't produce a move
             history.insert(0, 'R')
     return moves
 
-def calculate_score(moves1, moves2):
-    return sum((moves1[i] == 'R' and moves2[i] == 'S') or
-               (moves1[i] == 'P' and moves2[i] == 'R') or
-               (moves1[i] == 'S' and moves2[i] == 'P')
-               for i in range(len(moves1)))
-
-def generate_match_log(moves1, moves2):
-    return ''.join(f"{m1}{m2}{'=' if m1 == m2 else ('>' if (m1+m2) in ['RP', 'PS', 'SR'] else '<')}"
-                   for m1, m2 in zip(moves1, moves2))
-
-def run_game(k, prog1, prog2, seed=None):
-    set_random_seed(seed)
+def run_game(k, prog1, prog2, seed):
+    random.seed(seed)
     moves1 = run_program(prog1['A'], k, [])
     moves2 = run_program(prog2['A'], k, moves1)
     
-    score = calculate_score(moves1, moves2)
-    match_log = generate_match_log(moves1, moves2)
+    score = sum((moves1[i] == 'R' and moves2[i] == 'S') or
+                (moves1[i] == 'P' and moves2[i] == 'R') or
+                (moves1[i] == 'S' and moves2[i] == 'P')
+                for i in range(k))
     
-    return score, match_log, {}  # Empty dict for program_logs as they're not implemented in this outline
+    match_log = ''.join(f"{m1}{m2}{'=' if m1 == m2 else ('>' if (m1+m2) in ['RP', 'PS', 'SR'] else '<')}"
+                        for m1, m2 in zip(moves1, moves2))
+    
+    return score, match_log, {}

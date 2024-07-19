@@ -9,7 +9,7 @@
         "A": "P!A"
       }
     },
-    "matches": "",
+    "matches": "RP>RP>RP>",
     "score": 0
   },
   {
@@ -22,8 +22,8 @@
         "A": "S!A"
       }
     },
-    "matches": "",
-    "score": 1
+    "matches": "PS>PS>PS>",
+    "score": 0
   },
   {
     "input": {
@@ -61,7 +61,7 @@
         "A": "R!R!R!R!"
       }
     },
-    "matches": "SR>SR>SR>SP<",
+    "matches": "SR>SR>SR>PR<",
     "score": 0
   },
 
