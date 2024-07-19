@@ -87,39 +87,51 @@ def execute_operation(op, stack, own_history, opponent_history):
     return None
 
 
-def run_program_step(program, stack, ip, own_history, opponent_history):
+def run_program_step(program, stack, subroutine, ip, own_history, opponent_history):
     states = []
-    while True:
-        if ip >= len(program):
-            raise ValueError("Program counter out of bounds")
 
-        op = program[ip]
+    while True:
+        if ip >= len(program[subroutine]):
+            raise ValueError(
+                f"Program counter out of bounds in subroutine {subroutine}"
+            )
+
+        op = program[subroutine][ip]
 
         if op in "ABC":
-            states.append({"stack": list(stack), "ip": ip, op: op})
+            states.append({"stack": list(stack), "ip": f"{subroutine}{ip}", "op": op})
+            subroutine = op
             ip = 0
             continue
 
         try:
             move = execute_operation(op, stack, own_history, opponent_history)
         except Exception as e:
-            return {
-                "states": states,
-                "error": str(e),
-                "move": None,
-                "my_history": "".join(own_history),
-                "opponent_history": "".join(opponent_history),
-            }, ip
+            return (
+                {
+                    "states": states,
+                    "error": str(e),
+                    "move": None,
+                    "my_history": "".join(own_history),
+                    "opponent_history": "".join(opponent_history),
+                },
+                subroutine,
+                ip,
+            )
 
-        states.append({"stack": list(stack), "ip": ip, "op": op})
+        states.append({"stack": list(stack), "ip": f"{subroutine}{ip}", "op": op})
 
         if move:
-            return {
-                "states": states,
-                "move": move,
-                "my_history": "".join(own_history),
-                "opponent_history": "".join(opponent_history),
-            }, ip + 1
+            return (
+                {
+                    "states": states,
+                    "move": move,
+                    "my_history": "".join(own_history),
+                    "opponent_history": "".join(opponent_history),
+                },
+                subroutine,
+                ip + 1,
+            )
 
         ip += 1
 
@@ -129,11 +141,16 @@ def run_game(k, prog1, prog2, seed):
     moves1, moves2 = [], []
     log1, log2 = [], []
     stack1, stack2 = [], []
+    subroutine1, subroutine2 = "A", "A"
     ip1, ip2 = 0, 0
 
     for _ in range(k):
-        round_log1, ip1 = run_program_step(prog1["A"], stack1, ip1, moves1, moves2)
-        round_log2, ip2 = run_program_step(prog2["A"], stack2, ip2, moves2, moves1)
+        round_log1, subroutine1, ip1 = run_program_step(
+            prog1, stack1, subroutine1, ip1, moves1, moves2
+        )
+        round_log2, subroutine2, ip2 = run_program_step(
+            prog2, stack2, subroutine2, ip2, moves2, moves1
+        )
 
         log1.append(round_log1)
         log2.append(round_log2)

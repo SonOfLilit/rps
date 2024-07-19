@@ -17,7 +17,8 @@ test_suite = [
     # Stack operations (duplicate, swap, copy)
     (3, {"A": "R8S%[!!!"}, {"A": "R!A"}),  # RR, PR, RRP vs SSSSS
     # Subroutines
-    (3, {"A": "R!B", "B": "P!C", "C": "S!A"}, {"A": "R!A"}),  # A->B->C->A
+    (7, {"A": "R!B", "B": "P!P!C", "C": "S!B"}, {"A": "R!A"}),
+    (3, {"A": "RB", "B": "!C", "C": "SB"}, {"A": "R!A"}),
     # Access own and opponent's history
     (
         9,
@@ -112,8 +113,8 @@ def simplify_log(prog, full_log):
 
         round_states = []
         for state in round_log["states"]:
-            if prog[state["ip"]] in "ABC":
-                round_states.append(prog[state["ip"]])
+            if state["op"] in "ABC":
+                round_states.append(state["op"])
             stack_str = "".join(state["stack"])
             if not round_states or stack_str != round_states[-1]:
                 round_states.append(stack_str)
