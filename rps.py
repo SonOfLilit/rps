@@ -36,37 +36,31 @@ def execute_operation(op, stack, ip):
         if stack:
             stack.append(rps_decrement(stack.pop()))
     elif op == "+":
-        if len(stack) >= 2:
-            b, a = stack.pop(), stack.pop()
-            stack.append(rps_add(a, b))
+        b, a = stack.pop(), stack.pop()
+        stack.append(rps_add(a, b))
     elif op == "-":
-        if len(stack) >= 2:
-            b, a = stack.pop(), stack.pop()
-            stack.append(rps_subtract(a, b))
+        b, a = stack.pop(), stack.pop()
+        stack.append(rps_subtract(a, b))
     elif op == "^":
-        if len(stack) >= 2:
-            b, a = stack.pop(), stack.pop()
-            stack.append(rps_special(a, b))
+        b, a = stack.pop(), stack.pop()
+        stack.append(rps_special(a, b))
     elif op == "X":
         if stack:
             stack.pop()
     elif op == "8":
-        if stack:
-            stack.append(stack[-1])
+        stack.append(stack[-1])
     elif op == "%":
-        if len(stack) >= 2:
-            stack[-1], stack[-2] = stack[-2], stack[-1]
+        stack[-1], stack[-2] = stack[-2], stack[-1]
     elif op == "c":
-        if len(stack) >= 2:
-            stack.append(stack[-2])
+        stack.append(stack[-2])
     elif op == "@":
-        if stack:
-            depth = "RPS".index(stack.pop())
-            stack.append("R")  # Placeholder, actual value set in run_program
+        depth = "RPS".index(stack.pop())
+        stack.append("R")  # Placeholder, actual value set in run_program
     elif op == "?":
-        if stack:
-            depth = "RPS".index(stack.pop())
-            stack.append("R")  # Placeholder, actual value set in run_program
+        depth = "RPS".index(stack.pop())
+        stack.append("R")  # Placeholder, actual value set in run_program
+    else:
+        raise NotImplemented(op)
     return None
 
 
@@ -75,20 +69,39 @@ def run_program(program, k, opponent_moves):
     moves = []
     log = []
     ip = 0
-    program_length = len(program)
+
+    def log_state():
+        round_log.append(
+            {
+                "stack": list(stack),
+                "ip": ip,
+            }
+        )
 
     for round in range(k):
         round_log = []
-        while ip < program_length:
+        j = 0
+        while True:
             op = program[ip]
-            pre_state = {"stack": list(stack), "ip": ip}
             if op in "ABC":
+                log_state()
                 ip = 0
-                round_log.append(pre_state)
-                break
-            move = execute_operation(op, stack, ip)
-            post_state = {"stack": list(stack), "ip": ip}
-            round_log.append(pre_state)
+                j += 1
+                continue
+            try:
+                move = execute_operation(op, stack, ip)
+            except Exception as e:
+                log.append(
+                    {
+                        "states": round_log,
+                        "error": str(e),
+                        "my_history": list(reversed(moves)),
+                        "opponent_history": opponent_moves[:round],
+                    }
+                )
+                return moves, log
+
+            log_state()
             if op == "@" and stack:
                 depth = "RPS".index(stack[-1])
                 stack[-1] = moves[depth] if depth < len(moves) else "R"
@@ -99,9 +112,10 @@ def run_program(program, k, opponent_moves):
                 )
             if move:
                 moves.append(move)
+                log_state()
                 log.append(
                     {
-                        "states": round_log + [post_state],
+                        "states": round_log,
                         "move": move,
                         "my_history": list(reversed(moves)),
                         "opponent_history": opponent_moves[:round],
@@ -110,16 +124,8 @@ def run_program(program, k, opponent_moves):
                 ip += 1
                 break
             ip += 1
-        if len(moves) < round + 1:
-            moves.append("R")
-            log.append(
-                {
-                    "states": round_log + [{"stack": ["R"], "ip": ip}],
-                    "move": "R",
-                    "my_history": list(reversed(moves)),
-                    "opponent_history": opponent_moves[:round],
-                }
-            )
+            j += 1
+            assert j < 100
     return moves, log
 
 
@@ -129,15 +135,11 @@ def run_game(k, prog1, prog2, seed):
     moves2, log2 = run_program(prog2["A"], k, moves1)
 
     score = sum(
-        (moves1[i] == "R" and moves2[i] == "S")
-        or (moves1[i] == "P" and moves2[i] == "R")
-        or (moves1[i] == "S" and moves2[i] == "P")
-        for i in range(k)
+        (a == "R" and b == "S") or (a == "P" and b == "R") or (a == "S" and b == "P")
+        for a, b in zip(moves1, moves2)
     ) - sum(
-        (moves2[i] == "R" and moves1[i] == "S")
-        or (moves2[i] == "P" and moves1[i] == "R")
-        or (moves2[i] == "S" and moves1[i] == "P")
-        for i in range(k)
+        (b == "R" and a == "S") or (b == "P" and a == "R") or (b == "S" and a == "P")
+        for a, b in zip(moves1, moves2)
     )
 
     match_log = "".join(

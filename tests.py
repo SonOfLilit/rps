@@ -51,17 +51,14 @@ SEED = 42  # Constant seed for all tests
 RESULTS_FILENAME = "test_results.json"
 
 
-def simplify_log(full_log):
+def simplify_log(prog, full_log):
     simplified_log = []
     for round_log in full_log:
         round_states = []
-        for state in round_log["states"]:
-            if state["ip"] == 0 and round_states:  # Detect subroutine call
-                simplified_log.append(
-                    ["A"]
-                )  # Assuming only 'A' subroutine for simplicity
-                round_states = []
-            stack_str = "".join(state["stack"])
+        for state in round_log['states']:
+            if prog[state['ip']] in "ABC":
+                round_states.append(prog[state['ip']])
+            stack_str = ''.join(state['stack'])
             if not round_states or stack_str != round_states[-1]:
                 round_states.append(stack_str)
         simplified_log.append(round_states)
@@ -74,17 +71,19 @@ def run_test_suite(
     results = []
     for k, prog1, prog2 in test_suite:
         score, match_log, full_log = run_game(k, prog1, prog2, SEED)
-        results.append(
-            {
-                "input": {"k": k, "<": prog1, ">": prog2},
-                "matches": match_log,
-                "score": score,
-                "log": {
-                    "<": simplify_log(full_log["<"]),
-                    ">": simplify_log(full_log[">"]),
-                },
+        results.append({
+            "input": {
+                "k": k,
+                "<": prog1,
+                ">": prog2
+            },
+            "matches": match_log,
+            "score": score,
+            "log": {
+                "<": simplify_log(prog1["A"], full_log["<"]),
+                ">": simplify_log(prog2["A"], full_log[">"])
             }
-        )
+        })
     return results
 
 
