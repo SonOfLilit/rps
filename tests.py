@@ -38,34 +38,64 @@ test_suite = [
     # Edge cases for @ and ?
     (
         1,
-        {"A": "S@!"},
+        {"A": "P@!"},
         {"A": "R!A"},
-    ),  # Access own moves (including non-existent)
+    ),
     (
         2,
         {"A": "R!P@!"},
         {"A": "R!A"},
-    ),  # Access own moves (including non-existent)
+    ),
     (
         2,
         {"A": "R!S@!"},
         {"A": "R!A"},
-    ),  # Access own moves (including non-existent)
+    ),
     (
         3,
         {"A": "R!R!S@!"},
         {"A": "R!A"},
-    ),  # Access own moves (including non-existent)
+    ),
     (
         3,
-        {"A": "R!R!P@!"},
+        {"A": "R!R!R@!"},
         {"A": "R!A"},
-    ),  # Access own moves (including non-existent)
+    ),
+    (
+        4,
+        {"A": "R!R!R!R@!"},
+        {"A": "R!A"},
+    ),
+    (
+        1,
+        {"A": "P?!"},
+        {"A": "R!A"},
+    ),
+    (
+        2,
+        {"A": "R!P?!"},
+        {"A": "R!A"},
+    ),
+    (
+        2,
+        {"A": "R!S?!"},
+        {"A": "R!A"},
+    ),
     (
         3,
-        {"A": "R!P!P?!S?!R?!A"},
-        {"A": "P!S!R!"},
-    ),  # Access opponent's moves (including non-existent)
+        {"A": "R!R!S?!"},
+        {"A": "R!A"},
+    ),
+    (
+        3,
+        {"A": "R!R!R?!"},
+        {"A": "R!A"},
+    ),
+    (
+        4,
+        {"A": "R!R!R!R?!"},
+        {"A": "R!A"},
+    ),
 ]
 
 SEED = 42  # Constant seed for all tests
