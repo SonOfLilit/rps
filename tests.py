@@ -1,3 +1,10 @@
+import pytest
+import json
+import subprocess
+from typing import Dict, List, Tuple
+from rps import run_game  # You'll need to implement this function
+
+
 test_suite = [
     # Basic moves, scoring, and random
     (3, {'A': 'R!A'}, {'A': 'P!A'}),  # R vs P
@@ -33,3 +40,60 @@ test_suite = [
     (3, {'A': 'R!P!P@!S@!R@!A'}, {'A': 'R!P!S!'}),  # Access own moves (including non-existent)
     (3, {'A': 'R!P!P?!S?!R?!A'}, {'A': 'P!S!R!'}),  # Access opponent's moves (including non-existent)
 ]
+
+
+def run_test_suite(test_suite: List[Tuple[int, Dict[str, str], Dict[str, str]]]) -> List[Dict]:
+    results = []
+    for i, (k, prog1, prog2) in enumerate(test_suite):
+        score, match_log, program_logs = run_game(k, prog1, prog2)
+        results.append({
+            "input": {
+                "k": k,
+                "prog1": prog1,
+                "prog2": prog2
+            },
+            "matches": match_log,
+            "score": score
+        })
+    return results
+
+def get_head_commit_file_content(file_path: str) -> str:
+    try:
+        return subprocess.check_output(['git', 'show', f'HEAD:{file_path}'], universal_newlines=True)
+    except subprocess.CalledProcessError:
+        return ""
+
+def test_rps_stack_machine():
+    # Run the current test suite
+    current_results = run_test_suite(test_suite)
+
+    # Get the previous results from the HEAD commit
+    previous_content = get_head_commit_file_content('test_results.json')
+    
+    if not previous_content:
+        pytest.fail("No previous test results found in HEAD commit. Run tests and commit results first.")
+
+    previous_results = json.loads(previous_content)
+
+    # Compare the number of test cases
+    if len(current_results) != len(previous_results):
+        pytest.fail(f"Number of test cases changed. Previous: {len(previous_results)}, Current: {len(current_results)}")
+
+    # Compare results and generate error message in one pass
+    changes = []
+    for curr, prev in zip(current_results, previous_results):
+        if curr != prev:
+            changes.append(f"\nInput: {json.dumps(curr['input'])}\n"
+                           f"Previous matches: {prev.get('matches')}\n"
+                           f"Current matches: {curr.get('matches')}\n")
+
+    # If changes were found, join them into a single error message and fail
+    if changes:
+        error_message = "Test results changed:\n" + "".join(changes)
+        pytest.fail(error_message)
+
+    # If we got here, all tests passed and results match
+    assert True
+
+if __name__ == "__main__":
+    pytest.main([__file__])
