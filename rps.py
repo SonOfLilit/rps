@@ -27,14 +27,11 @@ def execute_operation(op, stack, ip):
     elif op == "~":
         stack.append(random.choice("RPS"))
     elif op == "!":
-        if stack:
-            return stack.pop()
+        return stack.pop()
     elif op == ">":
-        if stack:
-            stack.append(rps_increment(stack.pop()))
+        stack.append(rps_increment(stack.pop()))
     elif op == "<":
-        if stack:
-            stack.append(rps_decrement(stack.pop()))
+        stack.append(rps_decrement(stack.pop()))
     elif op == "+":
         b, a = stack.pop(), stack.pop()
         stack.append(rps_add(a, b))
@@ -45,13 +42,12 @@ def execute_operation(op, stack, ip):
         b, a = stack.pop(), stack.pop()
         stack.append(rps_special(a, b))
     elif op == "X":
-        if stack:
-            stack.pop()
+        stack.pop()
     elif op == "8":
         stack.append(stack[-1])
     elif op == "%":
         stack[-1], stack[-2] = stack[-2], stack[-1]
-    elif op == "c":
+    elif op == "[":
         stack.append(stack[-2])
     elif op == "@":
         depth = "RPS".index(stack.pop())
@@ -60,7 +56,7 @@ def execute_operation(op, stack, ip):
         depth = "RPS".index(stack.pop())
         stack.append("R")  # Placeholder, actual value set in run_program
     else:
-        raise NotImplemented(op)
+        raise NotImplementedError(op)
     return None
 
 

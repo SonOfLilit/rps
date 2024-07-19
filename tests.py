@@ -14,7 +14,7 @@ test_suite = [
     # Addition, subtraction, and special operations
     (4, {"A": "RP-!SP+!RR^!RP^!A"}, {"A": "R!R!R!R!"}),  # S, R, S, P vs R, R, R, R
     # Stack operations (duplicate, swap, copy)
-    (5, {"A": "R8!X!RP%!X!RPc!X!X!A"}, {"A": "S!S!S!S!S!"}),  # RR, PR, RRP vs SSSSS
+    (3, {"A": "R8S%[!!!"}, {"A": "R!A"}),  # RR, PR, RRP vs SSSSS
     # Subroutines
     (3, {"A": "R!B", "B": "P!C", "C": "S!A"}, {"A": "R!A"}),  # A->B->C->A
     # Access own and opponent's history
@@ -54,11 +54,16 @@ RESULTS_FILENAME = "test_results.json"
 def simplify_log(prog, full_log):
     simplified_log = []
     for round_log in full_log:
+        if "error" in round_log:
+            # If there's an error, add it to the simplified log and stop processing
+            simplified_log.append(f"Error: {round_log['error']}")
+            break
+
         round_states = []
-        for state in round_log['states']:
-            if prog[state['ip']] in "ABC":
-                round_states.append(prog[state['ip']])
-            stack_str = ''.join(state['stack'])
+        for state in round_log["states"]:
+            if prog[state["ip"]] in "ABC":
+                round_states.append(prog[state["ip"]])
+            stack_str = "".join(state["stack"])
             if not round_states or stack_str != round_states[-1]:
                 round_states.append(stack_str)
         simplified_log.append(round_states)
@@ -71,19 +76,17 @@ def run_test_suite(
     results = []
     for k, prog1, prog2 in test_suite:
         score, match_log, full_log = run_game(k, prog1, prog2, SEED)
-        results.append({
-            "input": {
-                "k": k,
-                "<": prog1,
-                ">": prog2
-            },
-            "matches": match_log,
-            "score": score,
-            "log": {
-                "<": simplify_log(prog1["A"], full_log["<"]),
-                ">": simplify_log(prog2["A"], full_log[">"])
+        results.append(
+            {
+                "input": {"k": k, "<": prog1, ">": prog2},
+                "matches": match_log,
+                "score": score,
+                "log": {
+                    "<": simplify_log(prog1["A"], full_log["<"]),
+                    ">": simplify_log(prog2["A"], full_log[">"]),
+                },
             }
-        })
+        )
     return results
 
 
@@ -135,10 +138,17 @@ def test_rps_stack_machine():
                 f"+ matches: {curr['matches']}"
             )
             changes.append(change)
+            for p in "<>":
+                if "log" not in prev:
+                    prev["log"] = {"<": [[]], ">": [[]]}
+                p, c = prev["log"][p][-1], curr["log"][p][-1]
+                if isinstance(c, str) != isinstance(p, str):
+                    changes.append("- " + (p if isinstance(p, str) else ""))
+                    changes.append("+ " + (c if isinstance(c, str) else ""))
 
     # If changes were found, join them into a single error message and fail
     if changes:
-        error_message = "Test results changed:\n\n" + "\n\n".join(changes)
+        error_message = "Test results changed:\n\n" + "\n".join(changes)
         pytest.fail(error_message)
 
     # If we got here, all tests passed and results match

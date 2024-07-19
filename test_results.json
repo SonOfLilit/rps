@@ -214,16 +214,52 @@
 
   {
     "input": {
-      "k": 5,
+      "k": 3,
       "<": {
-        "A": "R8!X!RP%!X!RPc!X!X!A"
+        "A": "R8S%[!!!"
       },
       ">": {
-        "A": "S!S!S!S!S!"
+        "A": "R!A"
       }
     },
-    "matches": "RS<RR=RS<RR=RS<",
-    "score": 3
+    "matches": "SR>RR=SR>",
+    "score": -2,
+    "log": {
+      "<": [
+        [
+          "R",
+          "RR",
+          "RRS",
+          "RSR",
+          "RSRS",
+          "RSR"
+        ],
+        [
+          "RS"
+        ],
+        [
+          "R"
+        ]
+      ],
+      ">": [
+        [
+          "R",
+          ""
+        ],
+        [
+          "A",
+          "",
+          "R",
+          ""
+        ],
+        [
+          "A",
+          "",
+          "R",
+          ""
+        ]
+      ]
+    }
   },
   {
     "input": {
@@ -327,8 +363,19 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=",
-    "score": 0
+    "matches": "",
+    "score": 0,
+    "log": {
+      "<": [
+        "Error: pop from empty list"
+      ],
+      ">": [
+        [
+          "R",
+          ""
+        ]
+      ]
+    }
   },
   {
     "input": {
@@ -340,8 +387,19 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=",
-    "score": 0
+    "matches": "",
+    "score": 0,
+    "log": {
+      "<": [
+        "Error: Q"
+      ],
+      ">": [
+        [
+          "R",
+          ""
+        ]
+      ]
+    }
   },
   {
     "input": {

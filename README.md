@@ -22,7 +22,7 @@ S (-- S) push an S
 X (x -- )
 8 (x -- x x)
 % (x y -- y x)
-c (x y -- x y x)
+[ (x y -- x y x)
 A ( -- ) Call A (with tail call optimization)
 B ( -- ) Call B (with tail call optimization)
 C ( -- ) Call C (with tail call optimization)
