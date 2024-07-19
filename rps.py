@@ -15,7 +15,7 @@ def rps_subtract(move1, move2):
 def rps_special(move1, move2):
     return 'S' if move1 == move2 == 'R' else 'P'
 
-def execute_operation(op, stack, history, opponent_history):
+def execute_operation(op, stack, ip):
     if op in 'RPS':
         stack.append(op)
     elif op == '~':
@@ -54,45 +54,97 @@ def execute_operation(op, stack, history, opponent_history):
         if len(stack) >= 2:
             stack.append(stack[-2])
     elif op == '@':
-        if stack and history:
+        if stack:
             depth = 'RPS'.index(stack.pop())
-            stack.append(history[depth] if depth < len(history) else 'R')
+            stack.append('R')  # Placeholder, actual value set in run_program
     elif op == '?':
-        if stack and opponent_history:
+        if stack:
             depth = 'RPS'.index(stack.pop())
-            stack.append(opponent_history[depth] if depth < len(opponent_history) else 'R')
+            stack.append('R')  # Placeholder, actual value set in run_program
     return None
 
 def run_program(program, k, opponent_moves):
     stack = []
-    history = []
     moves = []
-    for _ in range(k):
-        for op in program:
+    log = []
+    ip = 0
+    program_length = len(program)
+
+    for round in range(k):
+        round_log = []
+        while ip < program_length:
+            op = program[ip]
+            pre_state = {
+                "stack": list(stack),
+                "ip": ip
+            }
             if op in 'ABC':
-                program = program[program.index(op):]
+                ip = 0
+                round_log.append(pre_state)
                 break
-            move = execute_operation(op, stack, history, opponent_moves[:len(moves)])
+            move = execute_operation(op, stack, ip)
+            post_state = {
+                "stack": list(stack),
+                "ip": ip
+            }
+            round_log.append(pre_state)
+            if op == '@' and stack:
+                depth = 'RPS'.index(stack[-1])
+                stack[-1] = moves[depth] if depth < len(moves) else 'R'
+            elif op == '?' and stack:
+                depth = 'RPS'.index(stack[-1])
+                stack[-1] = opponent_moves[depth] if depth < len(opponent_moves) else 'R'
             if move:
                 moves.append(move)
-                history.insert(0, move)
+                log.append({
+                    "states": round_log + [post_state],
+                    "move": move,
+                    "my_history": list(reversed(moves)),
+                    "opponent_history": opponent_moves[:round]
+                })
+                ip += 1
                 break
-        if len(moves) < _ + 1:
-            moves.append('R')  # Default move if program doesn't produce a move
-            history.insert(0, 'R')
-    return moves
+            ip += 1
+        if len(moves) < round + 1:
+            moves.append('R')
+            log.append({
+                "states": round_log + [{"stack": ['R'], "ip": ip}],
+                "move": 'R',
+                "my_history": list(reversed(moves)),
+                "opponent_history": opponent_moves[:round]
+            })
+    return moves, log
 
 def run_game(k, prog1, prog2, seed):
     random.seed(seed)
-    moves1 = run_program(prog1['A'], k, [])
-    moves2 = run_program(prog2['A'], k, moves1)
+    moves1, log1 = run_program(prog1['A'], k, [])
+    moves2, log2 = run_program(prog2['A'], k, moves1)
     
     score = sum((moves1[i] == 'R' and moves2[i] == 'S') or
                 (moves1[i] == 'P' and moves2[i] == 'R') or
-                (moves1[i] == 'S' and moves2[i] == 'P')
-                for i in range(k))
+                (moves1[i] == 'S' and moves2[i] == 'P') for i in range(k)) - \
+            sum((moves2[i] == 'R' and moves1[i] == 'S') or
+                (moves2[i] == 'P' and moves1[i] == 'R') or
+                (moves2[i] == 'S' and moves1[i] == 'P') for i in range(k))
     
     match_log = ''.join(f"{m1}{m2}{'=' if m1 == m2 else ('>' if (m1+m2) in ['RP', 'PS', 'SR'] else '<')}"
                         for m1, m2 in zip(moves1, moves2))
     
-    return score, match_log, {}
+    full_log = {
+        "<": log1,
+        ">": log2
+    }
+    
+    return score, match_log, full_log
+
+# Example usage:
+if __name__ == "__main__":
+    prog1 = {"A": "R>!P>!S>!A"}
+    prog2 = {"A": "S!R!P!"}
+    score, match_log, full_log = run_game(3, prog1, prog2, 42)
+    print(f"Score: {score}")
+    print(f"Match log: {match_log}")
+    print("Full log:")
+    import json
+    print(json.dumps(full_log, indent=2))
+

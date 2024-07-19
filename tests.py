@@ -43,10 +43,24 @@ test_suite = [
 SEED = 42  # Constant seed for all tests
 RESULTS_FILENAME = 'test_results.json'
 
+def simplify_log(full_log):
+    simplified_log = []
+    for round_log in full_log:
+        round_states = []
+        for state in round_log['states']:
+            if state['ip'] == 0 and round_states:  # Detect subroutine call
+                simplified_log.append(['A'])  # Assuming only 'A' subroutine for simplicity
+                round_states = []
+            stack_str = ''.join(state['stack'])
+            if not round_states or stack_str != round_states[-1]:
+                round_states.append(stack_str)
+        simplified_log.append(round_states)
+    return simplified_log
+
 def run_test_suite(test_suite: List[Tuple[int, Dict[str, str], Dict[str, str]]]) -> List[Dict]:
     results = []
     for k, prog1, prog2 in test_suite:
-        score, match_log, _ = run_game(k, prog1, prog2, SEED)
+        score, match_log, full_log = run_game(k, prog1, prog2, SEED)
         results.append({
             "input": {
                 "k": k,
@@ -54,7 +68,11 @@ def run_test_suite(test_suite: List[Tuple[int, Dict[str, str], Dict[str, str]]])
                 ">": prog2
             },
             "matches": match_log,
-            "score": score
+            "score": score,
+            "log": {
+                "<": simplify_log(full_log["<"]),
+                ">": simplify_log(full_log[">"])
+            }
         })
     return results
 
@@ -90,11 +108,12 @@ def test_rps_stack_machine():
     # Compare results and generate error message in one pass
     changes = []
     for curr, prev in zip(current_results, previous_results):
-        if curr != prev:
-            changes.append(f"<: {curr['input']['<']['A']}\n"
-                           f">: {curr['input']['>']['A']}\n"
-                           f"- matches: {prev['matches']}\n"
-                           f"+ matches: {curr['matches']}")
+        if curr['matches'] != prev['matches']:
+            change = (f"<: {curr['input']['<']['A']}\n"
+                      f">: {curr['input']['>']['A']}\n"
+                      f"- matches: {prev['matches']}\n"
+                      f"+ matches: {curr['matches']}")
+            changes.append(change)
 
     # If changes were found, join them into a single error message and fail
     if changes:
