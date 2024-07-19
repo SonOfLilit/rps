@@ -2,8 +2,7 @@ import pytest
 import json
 import subprocess
 from typing import Dict, List, Tuple
-from rps import run_game  # You'll need to implement this function
-
+from rps import run_game
 
 test_suite = [
     # Basic moves, scoring, and random
@@ -41,16 +40,18 @@ test_suite = [
     (3, {'A': 'R!P!P?!S?!R?!A'}, {'A': 'P!S!R!'}),  # Access opponent's moves (including non-existent)
 ]
 
+SEED = 42  # Constant seed for all tests
+RESULTS_FILENAME = 'test_results.json'
 
 def run_test_suite(test_suite: List[Tuple[int, Dict[str, str], Dict[str, str]]]) -> List[Dict]:
     results = []
-    for i, (k, prog1, prog2) in enumerate(test_suite):
-        score, match_log, program_logs = run_game(k, prog1, prog2)
+    for k, prog1, prog2 in test_suite:
+        score, match_log, _ = run_game(k, prog1, prog2, SEED)
         results.append({
             "input": {
                 "k": k,
-                "prog1": prog1,
-                "prog2": prog2
+                "<": prog1,
+                ">": prog2
             },
             "matches": match_log,
             "score": score
@@ -63,15 +64,22 @@ def get_head_commit_file_content(file_path: str) -> str:
     except subprocess.CalledProcessError:
         return ""
 
+def save_results(results: List[Dict], filename: str):
+    with open(filename, 'w') as f:
+        json.dump(results, f, indent=2)
+
 def test_rps_stack_machine():
     # Run the current test suite
     current_results = run_test_suite(test_suite)
 
+    # Save current results to disk
+    save_results(current_results, RESULTS_FILENAME)
+
     # Get the previous results from the HEAD commit
-    previous_content = get_head_commit_file_content('test_results.json')
+    previous_content = get_head_commit_file_content(RESULTS_FILENAME)
     
     if not previous_content:
-        pytest.fail("No previous test results found in HEAD commit. Run tests and commit results first.")
+        pytest.fail(f"No previous test results found in HEAD commit. Run tests and commit {RESULTS_FILENAME} first.")
 
     previous_results = json.loads(previous_content)
 
@@ -83,13 +91,14 @@ def test_rps_stack_machine():
     changes = []
     for curr, prev in zip(current_results, previous_results):
         if curr != prev:
-            changes.append(f"\nInput: {json.dumps(curr['input'])}\n"
-                           f"Previous matches: {prev.get('matches')}\n"
-                           f"Current matches: {curr.get('matches')}\n")
+            changes.append(f"<: {curr['input']['<']['A']}\n"
+                           f">: {curr['input']['>']['A']}\n"
+                           f"- matches: {prev['matches']}\n"
+                           f"+ matches: {curr['matches']}")
 
     # If changes were found, join them into a single error message and fail
     if changes:
-        error_message = "Test results changed:\n" + "".join(changes)
+        error_message = "Test results changed:\n\n" + "\n\n".join(changes)
         pytest.fail(error_message)
 
     # If we got here, all tests passed and results match

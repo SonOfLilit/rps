@@ -2,13 +2,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "R!A"
       },
-      "prog2": {
+      ">": {
         "A": "P!A"
-      },
-      "seed": 42
+      }
     },
     "matches": "",
     "score": 0
@@ -16,13 +15,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "P!A"
       },
-      "prog2": {
+      ">": {
         "A": "S!A"
-      },
-      "seed": 43
+      }
     },
     "matches": "",
     "score": 1
@@ -30,13 +28,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "~!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!A"
-      },
-      "seed": 44
+      }
     },
     "matches": "PR<SR>SR>",
     "score": 1
@@ -44,13 +41,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "R>!P>!S>!A"
       },
-      "prog2": {
+      ">": {
         "A": "S!R!P!"
-      },
-      "seed": 45
+      }
     },
     "matches": "",
     "score": 1
@@ -58,13 +54,12 @@
   {
     "input": {
       "k": 4,
-      "prog1": {
+      "<": {
         "A": "RP-!SP+!RR^!RP^!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!R!R!R!"
-      },
-      "seed": 46
+      }
     },
     "matches": "SR>SR>SR>SP<",
     "score": 0
@@ -73,13 +68,12 @@
   {
     "input": {
       "k": 5,
-      "prog1": {
+      "<": {
         "A": "R8!X!RP%!X!RPc!X!X!A"
       },
-      "prog2": {
+      ">": {
         "A": "S!S!S!S!S!"
-      },
-      "seed": 47
+      }
     },
     "matches": "RS<RR=RS<RR=RS<",
     "score": 3
@@ -87,15 +81,14 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "R!B",
         "B": "P!C",
         "C": "S!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!A"
-      },
-      "seed": 48
+      }
     },
     "matches": "RR=RR=RR=",
     "score": 0
@@ -103,13 +96,12 @@
   {
     "input": {
       "k": 8,
-      "prog1": {
+      "<": {
         "A": "R!P!S!R!P!P@!S@!R@!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!P!S!R!P!S!R!P!"
-      },
-      "seed": 49
+      }
     },
     "matches": "RR=RR=RR=RR=RR=RR=RR=RR=",
     "score": 0
@@ -117,13 +109,12 @@
   {
     "input": {
       "k": 8,
-      "prog1": {
+      "<": {
         "A": "R!P!S!R!P!P?!S?!R?!A"
       },
-      "prog2": {
+      ">": {
         "A": "S!P!R!S!P!S!R!P!"
-      },
-      "seed": 50
+      }
     },
     "matches": "RS<RR=RS<RR=RS<RR=RS<RR=",
     "score": 4
@@ -131,27 +122,25 @@
   {
     "input": {
       "k": 5,
-      "prog1": {
+      "<": {
         "A": "R!P?>>!A"
       },
-      "prog2": {
+      ">": {
         "A": "~!A"
-      },
-      "seed": 51
+      }
     },
-    "matches": "RR=RR=RS<RR=RS<",
-    "score": 2
+    "matches": "RS<RR=RR=RR=RR=",
+    "score": 1
   },
   {
     "input": {
       "k": 1,
-      "prog1": {
+      "<": {
         "A": "-!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!A"
-      },
-      "seed": 52
+      }
     },
     "matches": "RR=",
     "score": 0
@@ -159,13 +148,12 @@
   {
     "input": {
       "k": 1,
-      "prog1": {
+      "<": {
         "A": "Q!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!A"
-      },
-      "seed": 53
+      }
     },
     "matches": "RR=",
     "score": 0
@@ -173,13 +161,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "R!P!P@!S@!R@!A"
       },
-      "prog2": {
+      ">": {
         "A": "R!P!S!"
-      },
-      "seed": 54
+      }
     },
     "matches": "RR=RR=RR=",
     "score": 0
@@ -187,13 +174,12 @@
   {
     "input": {
       "k": 3,
-      "prog1": {
+      "<": {
         "A": "R!P!P?!S?!R?!A"
       },
-      "prog2": {
+      ">": {
         "A": "P!S!R!"
-      },
-      "seed": 55
+      }
     },
     "matches": "RP>RR=RP>",
     "score": 0
