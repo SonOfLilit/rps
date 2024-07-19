@@ -31,7 +31,7 @@ test_suite = [
         {"A": "SPR!!!RRRRRR!!!!!!"},
     ),  # RPSR + opponent's PSR
     # Complex strategy
-    (5, {"A": "R!P?>>!A"}, {"A": "R!S!P!A"}),  # Counter to opponent's previous move + 2
+    (5, {"A": "S!P?>!P?>!P?>!P?>!"}, {"A": "R!R!R!P!P!"}),  # Counter to opponent's previous move + 2
     # Error cases
     (1, {"A": "-!A"}, {"A": "R!A"}),  # Stack underflow
     (1, {"A": "Q!A"}, {"A": "R!A"}),  # Unknown command
