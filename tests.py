@@ -99,13 +99,14 @@ test_suite = [
     ),
     (3, {"A": ""},{"A": "R!"}),
     (3, {"A": "R!"},{"A": "!"}),
+    (3, {"A": "@"},{"A": "?"}),
 ]
 
 SEED = 42  # Constant seed for all tests
 RESULTS_FILENAME = "test_results.json"
 
 
-def simplify_log(prog, full_log):
+def simplify_log(full_log):
     simplified_log = []
     for round_log in full_log:
         if "error" in round_log:
@@ -138,8 +139,8 @@ def run_test_suite(
         }
         if not os.environ.get("DEBUG"):
             result["log"] = {
-                    "<": simplify_log(prog1["A"], full_log["<"]),
-                    ">": simplify_log(prog2["A"], full_log[">"]),
+                    "<": simplify_log(full_log["<"]),
+                    ">": simplify_log(full_log[">"]),
                 }
         results.append(result)
     return results
