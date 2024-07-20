@@ -41,6 +41,8 @@ def rps_compare(move1, move2):
     """Compare two RPS moves. Returns '>' if move1 wins, '<' if move2 wins, '=' if tie."""
     if move1 == move2:
         return "="
+    if move1 == "X" or move2 == "X":
+        return "X"
     return ">" if rps_to_int(move1) == (rps_to_int(move2) - 1) % 3 else "<"
 
 
@@ -91,20 +93,20 @@ def run_program_step(program, stack, subroutine, ip, own_history, opponent_histo
     states = []
 
     while True:
-        if ip >= len(program[subroutine]):
-            raise ValueError(
-                f"Program counter out of bounds in subroutine {subroutine}"
-            )
-
-        op = program[subroutine][ip]
-
-        if op in "ABC":
-            states.append({"stack": list(stack), "ip": f"{subroutine}{ip}", "op": op})
-            subroutine = op
-            ip = 0
-            continue
-
         try:
+            if ip >= len(program[subroutine]):
+                raise ValueError(
+                    f"Program counter out of bounds in subroutine {subroutine}"
+                )
+
+            op = program[subroutine][ip]
+
+            if op in "ABC":
+                states.append({"stack": list(stack), "ip": f"{subroutine}{ip}", "op": op})
+                subroutine = op
+                ip = 0
+                continue
+
             move = execute_operation(op, stack, own_history, opponent_history)
         except Exception as e:
             return (
@@ -136,8 +138,7 @@ def run_program_step(program, stack, subroutine, ip, own_history, opponent_histo
         ip += 1
 
 
-def run_game(k, prog1, prog2, seed):
-    random.seed(seed)
+def run_game_rounds(k, prog1, prog2):
     moves1, moves2 = [], []
     log1, log2 = [], []
     stack1, stack2 = [], []
@@ -155,15 +156,27 @@ def run_game(k, prog1, prog2, seed):
         log1.append(round_log1)
         log2.append(round_log2)
 
+        moves1.append(round_log1["move"] or "X")
+        moves2.append(round_log2["move"] or "X")
+
         if round_log1["move"] is None or round_log2["move"] is None:
             break
 
-        moves1.append(round_log1["move"])
-        moves2.append(round_log2["move"])
+    return moves1, moves2, log1, log2
 
-    score = sum(rps_compare(a, b) == "<" for a, b in zip(moves1, moves2)) - sum(
-        rps_compare(a, b) == ">" for a, b in zip(moves1, moves2)
-    )
+def run_game(k, prog1, prog2, seed):
+    random.seed(seed)
+
+    moves1, moves2, log1, log2 = run_game_rounds(k, prog1, prog2)
+
+    boom1 = log1[-1]["move"] is None
+    boom2 = log2[-1]["move"] is None
+    if boom1 or boom2:
+        score = k * (boom2 - boom1)
+    else:
+        score = sum(rps_compare(a, b) == "<" for a, b in zip(moves1, moves2)) - sum(
+            rps_compare(a, b) == ">" for a, b in zip(moves1, moves2)
+        )
 
     match_log = "".join(m1 + m2 + rps_compare(m1, m2) for m1, m2 in zip(moves1, moves2))
 

@@ -97,6 +97,8 @@ test_suite = [
         {"A": "R!R!R!R?!"},
         {"A": "R!A"},
     ),
+    (3, {"A": ""},{"A": "R!"}),
+    (3, {"A": "R!"},{"A": "!"}),
 ]
 
 SEED = 42  # Constant seed for all tests

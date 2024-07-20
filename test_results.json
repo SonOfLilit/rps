@@ -751,8 +751,8 @@
         "A": "R!A"
       }
     },
-    "matches": "",
-    "score": 0,
+    "matches": "XRX",
+    "score": -1,
     "log": {
       "<": [
         "Error: pop from empty list"
@@ -775,8 +775,8 @@
         "A": "R!A"
       }
     },
-    "matches": "",
-    "score": 0,
+    "matches": "XRX",
+    "score": -1,
     "log": {
       "<": [
         "Error: Unknown operation: Q"
@@ -799,8 +799,8 @@
         "A": "R!A"
       }
     },
-    "matches": "",
-    "score": 0,
+    "matches": "XRX",
+    "score": -1,
     "log": {
       "<": [
         "Error: Not enough history to access depth 0"
@@ -861,8 +861,8 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=",
-    "score": 0,
+    "matches": "RR=XRX",
+    "score": -2,
     "log": {
       "<": [
         [
@@ -943,8 +943,8 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=RR=",
-    "score": 0,
+    "matches": "RR=RR=XRX",
+    "score": -3,
     "log": {
       "<": [
         [
@@ -1044,8 +1044,8 @@
         "A": "R!A"
       }
     },
-    "matches": "",
-    "score": 0,
+    "matches": "XRX",
+    "score": -1,
     "log": {
       "<": [
         "Error: Not enough opponent history to access depth 0"
@@ -1106,8 +1106,8 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=",
-    "score": 0,
+    "matches": "RR=XRX",
+    "score": -2,
     "log": {
       "<": [
         [
@@ -1188,8 +1188,8 @@
         "A": "R!A"
       }
     },
-    "matches": "RR=RR=",
-    "score": 0,
+    "matches": "RR=RR=XRX",
+    "score": -3,
     "log": {
       "<": [
         [
@@ -1276,6 +1276,75 @@
           "R",
           ""
         ]
+      ]
+    }
+  },
+  {
+    "input": {
+      "k": 3,
+      "<": {
+        "A": ""
+      },
+      ">": {
+        "A": "R!"
+      }
+    },
+    "matches": "XRX",
+    "score": -3,
+    "log": {
+      "<": [
+        "Error: Program counter out of bounds in subroutine A"
+      ],
+      ">": [
+        [
+          "R",
+          ""
+        ]
+      ]
+    }
+  },
+  {
+    "input": {
+      "k": 3,
+      "<": {
+        "A": "R!"
+      },
+      ">": {
+        "A": "!"
+      }
+    },
+    "matches": "RXX",
+    "score": 3,
+    "log": {
+      "<": [
+        [
+          "R",
+          ""
+        ]
+      ],
+      ">": [
+        "Error: pop from empty list"
+      ]
+    }
+  },
+  {
+    "input": {
+      "k": 3,
+      "<": {
+        "A": "@"
+      },
+      ">": {
+        "A": "?"
+      }
+    },
+    "matches": "XX=",
+    "score": 0,
+    "log": {
+      "<": [
+        "Error: pop from empty list"
+      ],
+      ">": [
+        "Error: pop from empty list"
       ]
     }
   }
