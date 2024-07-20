@@ -21,7 +21,7 @@ def tournament():
                 scores[a] += score
                 scores[b] -= score
                 print(a, b)
-                print(match_log)
+                print(match_log, score)
     print(json.dumps(scores, indent=2))
 
 if __name__ == "__main__":
